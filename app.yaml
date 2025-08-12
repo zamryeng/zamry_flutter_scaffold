@@ -1,0 +1,11 @@
+# Search and replace the values below with the correct values for your app
+app_name: Zamry App
+launcher_name: Zamry App
+package_name: zamry_app
+description: "A zamry template app"
+bundle_id_android: com.zamry.app
+bundle_id_ios: com.zamry.app
+firebase_project_id_prod: zamry-app-prod
+firebase_project_id_staging: zamry-app
+flutter_version: 3.32.0
+
