@@ -121,8 +121,8 @@ jobs:
         run: |
           echo "Running dart analyze..."
           
-          # Run analyze and capture output, excluding TODO comments
-          dart analyze --fatal-infos --fatal-warnings 2>&1 | grep -v "TODO" > analyze_output.txt
+          # Run analyze and capture output
+          dart analyze --fatal-infos --fatal-warnings 2>&1 > analyze_output.txt
           
           # Count the number of issues found (count lines that start with "   info", "   warning", or "   error")
           issue_count=$(grep -c "^   \(info\|warning\|error\)" analyze_output.txt || echo "0")
@@ -135,7 +135,7 @@ jobs:
             cat analyze_output.txt
           else
             echo "analysis_passed=true" >> $GITHUB_OUTPUT
-            echo "✅ No analysis issues found (excluding TODOs)"
+            echo "✅ No analysis issues found"
           fi
         continue-on-error: true
       
