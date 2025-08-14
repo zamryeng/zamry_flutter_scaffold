@@ -1,5 +1,5 @@
-name: zamry_app
-description: "A zamry template app"
+name: zamry_wallet
+description: "Zamry's non-custodial wallet for fiat and crypto"
   
 publish_to: 'none'
 # The following defines the version and build number for your application using this format:version: 1.0.0-test+1

@@ -20,7 +20,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.zamry.app"
+    namespace = "com.zamry.wallet"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -53,13 +53,13 @@ android {
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".staging"
-            resValue("string", "app_name", "Zamry App (Staging)")
+            resValue("string", "app_name", "Zamry Wallet (Staging)")
             signingConfig = signingConfigs.getByName("staging")
         }
         create("prod") {
             dimension = "env"
             applicationIdSuffix = ""
-            resValue("string", "app_name", "Zamry App")
+            resValue("string", "app_name", "Zamry Wallet")
             signingConfig = signingConfigs.getByName("prod")
         }
     }
@@ -67,7 +67,7 @@ android {
     
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.zamry.app"
+        applicationId = "com.zamry.wallet"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
