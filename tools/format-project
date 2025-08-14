@@ -20,9 +20,17 @@ print_colored() {
 
 # Function to get line length from .vscode/settings.json
 get_line_length() {
-    if [ -f "../.vscode/settings.json" ]; then
+    # Determine the correct path to .vscode/settings.json based on execution context
+    local settings_file=""
+    if [ -f ".vscode/settings.json" ]; then
+        settings_file=".vscode/settings.json"
+    elif [ -f "../.vscode/settings.json" ]; then
+        settings_file="../.vscode/settings.json"
+    fi
+    
+    if [ -n "$settings_file" ]; then
         # Extract dart.lineLength value from settings.json
-        local line_length=$(grep -o '"dart.lineLength": [0-9]*' ../.vscode/settings.json | grep -o '[0-9]*')
+        local line_length=$(grep -o '"dart.lineLength": [0-9]*' "$settings_file" | grep -o '[0-9]*')
         if [ -n "$line_length" ]; then
             echo "$line_length"
         else
