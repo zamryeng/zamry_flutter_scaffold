@@ -69,7 +69,6 @@ class AppView<T extends AppViewModel> extends StatefulWidget {
     required this.model,
     required this.builder,
     this.autoDispose = true,
-    this.child,
     this.initState,
     this.postFrameCallback,
     this.keepAlive = false,
@@ -86,13 +85,6 @@ class AppView<T extends AppViewModel> extends StatefulWidget {
   /// If true, the view model's [dispose] method will be called when this widget
   /// is disposed. This is useful for cleaning up resources like streams or timers.
   final bool autoDispose;
-
-  /// An optional child widget that can be accessed in the builder function.
-  ///
-  /// This child widget is passed to the builder function and can be used
-  /// to build the widget tree. It's typically used for providing additional
-  /// context or data to the view.
-  final Widget? child;
 
   /// An optional callback that is called during widget initialization.
   ///
@@ -115,7 +107,7 @@ class AppView<T extends AppViewModel> extends StatefulWidget {
   /// as parameters and should return a widget tree. The view model is provided
   /// through the Provider pattern, so any child widgets can access it using
   /// [Provider.of] or [Consumer].
-  final Widget Function(T vm, Widget? child) builder;
+  final Widget Function(T vm, BuildContext context) builder;
 
   /// Whether to keep the widget alive when it's not visible.
   ///
@@ -196,13 +188,12 @@ class AppViewState<T extends AppViewModel> extends State<AppView<T>>
       value: model,
       builder: (BuildContext context, Widget? child) {
         try {
-          return widget.builder(model, child);
+          return widget.builder(model, context);
         } catch (e) {
           Logger(widget.runtimeType.toString()).severe('Error in builder of AppView: $e');
           return Container();
         }
       },
-      child: widget.child,
     );
   }
 
