@@ -1,39 +1,8 @@
-# Flutter MVVM Template
+# Zamry Wallet
 
-## 1. Template Overview
+## 1. Codebase Overview
 
-This is a comprehensive, opinionated Flutter template that implements the Model-View-ViewModel (MVVM) architecture pattern with a **feature-first folder structure**. The template provides a solid foundation for building scalable Flutter applications with clean architecture principles, dependency injection, comprehensive error handling, and a robust UI component library.
-
-*Template created by [@MajorE](https://github.com/meghatronics)*
-
-
-Key features of this template include:
-- **Clean Architecture**: Clear separation between data, domain, and presentation layers
-- **Dependency Injection**: Uses GetIt for service locator pattern
-- **Error Handling**: Comprehensive error handling with custom failure types
-- **UI Components**: Reusable, themed UI components with analytics integration
-- **Environment Support**: Multi-environment configuration (staging/production)
-- **Analytics Integration**: Built-in analytics and error logging services
-- **Internationalization**: Complete i18n setup with ARB files
-
-## 2. Template Characteristics
-
-| Aspect | Implementation | Details |
-|--------|---------------|---------|
-| **Architecture** | MVVM (Model-View-ViewModel) | Clean separation with AppViewModel base class |
-| **Folder Structure** | Feature-First | Each feature has data/domain/ui subdirectories |
-| **Service Locator** | GetIt | Constructor injection with Service Locator |
-| **State Management** | Provider + ChangeNotifier | AppView wrapper for MVVM pattern |
-| **Network Layer** | Dio | REST API service with interceptors |
-| **Error Handling** | Custom Failure Classes | ServerFailure, NetworkFailure, InputFailure, etc. |
-| **Analytics** | Firebase Analytics | Built-in event tracking |
-| **Local Storage** | Flutter Secure Storage | Encrypted local storage |
-| **Theming** | Custom Theme System | AppColors, AppStyles with dark/light support |
-| **Navigation** | GoRouter | Declarative navigation with GoRouter |
-| **Environment Variables** | Dart Define | Staging/Production configuration |
-| **Internationalization** | ARB Files | Multi-language support |
-| **Testing** | Not Implemented yet | - |
-| **Size** | <8.9 MB per abi | Install APK size of this template is 8.8MB or lesser depending on the abi |
+This app is built from [zamry_flutter_scaffold](https://github.com/zamryeng/zamry_flutter_scaffold), a comprehensive, opinionated Flutter template that implements the Model-View-ViewModel (MVVM) architecture pattern with a **feature-first folder structure** created by [@MajorE](https://github.com/meghatronics)*
 
 ### Automation Tools
 
@@ -99,7 +68,7 @@ Key features of this template include:
    ```
 
 4. **Environment Configuration**:
-   - This template is configured for two environments - prod and staging. 
+   - This app is configured for two environments - prod and staging. 
    - Use `EnvironmentConfig` for environment-specific values and secrets. 
    - Environment variable files: `lib/main/prod.env`, `lib/main/staging.env`
 
@@ -121,28 +90,16 @@ Key features of this template include:
    - Run `flutter gen-l10n` to generate translation files
 
 ---
-## 4. Customization Todo List
+## 4. Setup Instructions
 
-When cloning this template for a new project, you need to update the following files and references:
-
-**Core Application Files:**
-- [ ] Create `lib/main/staging.env` and `lib/main/prod.env` files and insert your env variables in json format. These files are excluded from version control, and so not available with the template.  
+- [ ] Create `lib/main/staging.env` and `lib/main/prod.env` files and insert your env variables in json format. These files are excluded from version control.  
    ```
    {
       "IS_PROD": true, 
-      "APP_NAME": "Zamry App",
+      "APP_NAME": "Zamry Wallet",
       "API_URL": "https://zamry.com/api/"
    }
    ```
-- [ ] Open `app.yaml` and do a full codebase search for each value. Replace all with your own values. 
-This will affect the following:
-   **Android Configuration:**
-   - `android/app/build.gradle.kts` - Update `namespace`, `applicationId`, and `resValue` for app names
-   **iOS Configuration:**
-   - `ios/Runner/Info.plist` - Update `CFBundleDisplayName` and `CFBundleName`
-   - `ios/Runner.xcodeproj/project.pbxproj` - Update bundle identifiers and display names
-   **Firebase Configuration:**
-   - `tools/flutterfire-config` - Update Firebase project ID and bundle IDs
 
 - [ ] Regenerate Firebase config files using `./tools/flutterfire-config staging debug` and `./tools/flutterfire-config prod debug`
       The Github Workflows will handle release runs. You can run the cli for release when you need to otherwise. 
@@ -157,76 +114,11 @@ This will affect the following:
    - `ios/flavors/prod/GoogleService-Info.plist` - iOS Firebase config for production
    - `firebase.json` - Regenerated with new project ID
 
-**Android Signing Configuration:**
-- [ ] Create JKS keystore files for app signing:
-   - `android/app/src/staging/app_staging_sign.jks` - Staging keystore file
-   - `android/app/src/prod/app_prod_sign.jks` - Production keystore file
-  ```bash
-  # Generate staging keystore
-  keytool -genkey -v -keystore android/app/src/staging/app_staging_sign.jks \
-    -keyalg RSA -keysize 2048 -validity 10000 -alias staging-key \
-    -dname "CN=Your App Staging, OU=Development, O=YourCompany, L=Unknown, ST=Unknown, C=US" \
-    -storepass your_staging_password -keypass your_staging_password
-  
-  # Generate production keystore
-  keytool -genkey -v -keystore android/app/src/prod/app_prod_sign.jks \
-    -keyalg RSA -keysize 2048 -validity 10000 -alias prod-key \
-    -dname "CN=Your App, OU=Production, O=YourCompany, L=Unknown, ST=Unknown, C=US" \
-    -storepass your_prod_password -keypass your_prod_password
-  ```
-
-- [ ] Create key.properties file with keystore configuration:
-   - `android/key.properties` - Keystore configuration for app signing
-
-  ```properties
-  # Keystore configuration for app signing
-  # This file should be kept secure and not committed to version control
-  
-  # Staging environment keystore
-  staging.storePassword=your_staging_password
-  staging.keyPassword=your_staging_password
-  staging.keyAlias=staging-key
-  staging.storeFile=src/staging/app_staging_sign.jks
-  
-  # Production environment keystore
-  prod.storePassword=your_prod_password
-  prod.keyPassword=your_prod_password
-  prod.keyAlias=prod-key
-  prod.storeFile=src/prod/app_prod_sign.jks
-  ```
-
-**GitHub Workflows:**
-- [ ] Configure GitHub secrets for CI/CD workflows (see complete list in GitHub Workflows section below)
-
-**Localization Files:**
-- [ ] `lib/l10n/arbs/app_en.arb` - Update `appName` and other app-specific strings
-- [ ] `lib/l10n/arbs/app_sw.arb` - Update `appName` and other app-specific strings
-- [ ] `lib/l10n/arbs/app_fr.arb` - Update `appName` and other app-specific strings
-- [ ] `lib/l10n/arbs/app_ar.arb` - Update `appName` and other app-specific strings
-- [ ] Regenerate translations with `flutter gen-l10n`
-
-**Assets:**
-- [ ] `assets/images/launcher_icon.png` - Replace with your app icon
-- [ ] `assets/images/splash.png` - Replace with your splash screen
-- [ ] Update `pubspec.yaml` flutter_launcher_icons and flutter_native_splash configurations
-- [ ] Run the respective commands to generate your launcher icons, and splash screens
-
-**Documentation:**
-- [ ] `README.md` - Update all references to template name and branding
-
-**Environment Setup:**
-- [ ] Create new Firebase project
-- [ ] Set up Firebase App Distribution for staging and production
-- [ ] Create dev-testers group - and add all mobile engineers and managers.
-- [ ] Configure Google Play Console for production releases
-- [ ] Set up App Store Connect for iOS releases
-- [ ] Generate new keystore files for app signing
-- [ ] Configure all GitHub secrets for CI/CD workflows
 ---
 
 ## 5. GitHub Workflows
 
-This template includes three main CI/CD workflows for automated builds, code quality, and deployments:
+This project includes three main CI/CD workflows for automated builds, code quality, and deployments:
 
 **GitHub Secrets (for CI/CD workflows):**
 
@@ -235,8 +127,6 @@ This template includes three main CI/CD workflows for automated builds, code qua
 | `PROD_FIREBASE_APP_ID` \| `STAGING_FIREBASE_APP_ID` | Firebase app ID for uploading builds | Firebase builds |
 | `PROD_FIREBASE_PROJECT_ID` \| `STAGING_FIREBASE_PROJECT_ID` | Firebase project identifier for configuration | Firebase builds |
 | `PROD_CLOUD_ACCOUNT_JSON` \| `STAGING_CLOUD_ACCOUNT_JSON` | Google cloud service account JSON key for authentication | Firebase and PlayStore uploads |
-| `PROD_GOOGLE_SERVICES_JSON` \| `STAGING_GOOGLE_SERVICES_JSON` | Firebase google-services.json | Android builds |
-| `PROD_GOOGLE_SERVICES_PLIST` \| `STAGING_GOOGLE_SERVICES_PLIST` | Firebase GoogleService-info.plist | iOS builds |
 | `PROD_ENV` \| `STAGING_ENV` | Dart-define environment variables in JSON format (API URLs, app names, etc.) | All builds |
 | `PROD_KEYSTORE_BASE64` \| `STAGING_KEYSTORE_BASE64` | Base64 encoded Android keystore file for app signing | Android builds |
 | `PROD_KEY_PROPERTIES` \| `STAGING_KEY_PROPERTIES` | Android keystore configuration properties for signing | Android builds |
@@ -287,7 +177,6 @@ This template includes three main CI/CD workflows for automated builds, code qua
 **Required GitHub Secrets:**
 - `STAGING_FIREBASE_APP_ID` / `PROD_FIREBASE_APP_ID` - Firebase app IDs
 - `STAGING_CLOUD_ACCOUNT_JSON` / `PROD_CLOUD_ACCOUNT_JSON` - Firebase cloud account JSON for authentication and Firebase App Distribution
-- `STAGING_GOOGLE_SERVICES_JSON` / `PROD_GOOGLE_SERVICES_JSON` - Google services configuration for Android
 - `STAGING_ENV` / `PROD_ENV` - Environment variables from dart define (JSON format)
 - `STAGING_KEYSTORE_BASE64` / `PROD_KEYSTORE_BASE64` - Base64 encoded keystore files
 - `STAGING_KEY_PROPERTIES` / `PROD_KEY_PROPERTIES` - Keystore configuration
@@ -316,23 +205,3 @@ This template includes three main CI/CD workflows for automated builds, code qua
   - `PROD_CERTIFICATE_PRIVATE_KEY`
   - `PROD_APP_STORE_APP_ID`
   - `PROD_GOOGLE_SERVICES_PLIST`
-
-#### Repository Setup Requirements
-
-**Branch Protection:**
-- Enable branch protection on `main` and `prod` branches
-- Require pull request reviews before merging
-- Require status checks to pass before merging
-
-**Required Apps and Services:**
-- Firebase project with App Distribution enabled
-- Google Play Console account with API access
-- App Store Connect account with API access
-- GitHub repository with Actions enabled
-
-**Usage Instructions:**
-1. Set up all required GitHub secrets in repository settings
-2. Create pull requests to `develop` or `main` branches to trigger code analysis and auto-fixes
-3. Create pull requests marked as "ready for review" to trigger staging builds
-4. Comment "Build for testing: staging" or "Build for testing: prod" for specific builds
-5. Merge to main/prod branches to trigger production releases

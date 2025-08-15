@@ -1,4 +1,4 @@
-package com.zamry.app
+package com.zamry.wallet
 
 import io.flutter.embedding.android.FlutterActivity
 
