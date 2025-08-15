@@ -30,6 +30,10 @@ permissions:
   issues: write
   id-token: write
 
+concurrency:
+  group: android-build-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
+  cancel-in-progress: true
+
 env:
   flutter_version: "3.32.0"
 
