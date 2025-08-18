@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 
-import '../../../features/authentication/ui/login_view.dart';
+import '../../../features/dashboard/ui/ui.dart';
+import '../../../features/onboarding/ui/ui.dart';
+import '../../../features/splash/ui/splash_screen.dart';
 import '../ui_components/others/error_view.dart';
 import 'app_navigator.dart';
 import 'app_routes.dart';
@@ -26,13 +28,59 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.splash.path,
         name: AppRoutes.splash.name,
-        builder: (context, state) => const LoginView(),
+        builder: (context, state) => SplashScreen(
+          onProceed: () {
+            context.goNamed(AppRoutes.onboarding.name);
+          },
+        ),
       ),
       GoRoute(
-        path: AppRoutes.login.path,
-        name: AppRoutes.login.name,
-        builder: (context, state) => const LoginView(),
+        path: AppRoutes.onboarding.path,
+        name: AppRoutes.onboarding.name,
+        builder: (context, state) {
+          return OnboardingHomeScreen(
+            onGetStarted: () {
+              context.goNamed(
+                AppRoutes.onboardingFlow.name,
+                pathParameters: {'page': OnboardingPage.countrySelection.value},
+              );
+            },
+          );
+        },
+        routes: [
+          GoRoute(
+            path: AppRoutes.onboardingFlow.path,
+            name: AppRoutes.onboardingFlow.name,
+            builder: (context, state) {
+              final page = OnboardingPage.fromString(state.pathParameters['page']!);
+              return OnboardingScreen(
+                page: page,
+                onComplete: () {
+                  context.goNamed(AppRoutes.dashboard.name);
+                },
+                onForward: (page) {
+                  context.goNamed(
+                    AppRoutes.onboardingFlow.name,
+                    pathParameters: {'page': page.value},
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
+      GoRoute(
+        path: AppRoutes.dashboard.path,
+        name: AppRoutes.dashboard.name,
+        builder: (context, state) {
+          return DashboardScreen();
+        },
+      ),
+      // GoRoute(
+      //   path: AppRoutes.login.path,
+      //   name: AppRoutes.login.name,
+      //   builder: (context, state) => const LoginView(),
+      // ),
       // Dynamic routes
       // GoRoute(
       //   path: '/user/:userId', // Use the path pattern that matches userProfile function

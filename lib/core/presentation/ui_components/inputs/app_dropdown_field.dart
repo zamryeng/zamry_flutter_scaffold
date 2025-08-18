@@ -39,6 +39,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
   late final FocusNode _focusNode;
 
   bool _sheetIsOpen = false;
+
   @override
   void initState() {
     widget.controller.addListener(listener);
@@ -58,6 +59,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
   }
 
   void listener() {
+    if (!mounted) return;
     setState(() {});
   }
 

@@ -7,6 +7,10 @@ import '../../core/domain/app_user.dart';
 import 'error_logging_service.dart';
 
 class CrashlyticsService extends ErrorLogService {
+  CrashlyticsService() {
+    initialise(shouldLog: true);
+  }
+
   @override
   void initialise({required bool shouldLog}) {
     super.initialise(shouldLog: shouldLog);
