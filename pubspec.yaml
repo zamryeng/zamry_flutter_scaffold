@@ -36,6 +36,7 @@ dependencies:
   riverpod: ^2.6.1
   share_plus: ^11.0.0
   shimmer: ^3.0.0
+  flutter_svg: ^2.2.0
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^5.0.0
@@ -47,9 +48,9 @@ flutter:
   generate: true
   # To add assets to your application
   assets:
-    - assets/images/
+#    - assets/images/
     - assets/icons/
-    - assets/animations/
+#    - assets/animations/
 
   # To add custom fonts to your application
   # fonts:
