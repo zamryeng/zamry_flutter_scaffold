@@ -4,6 +4,7 @@ import '../../features/authentication/data/authentication_repo.dart';
 import '../../features/authentication/domain/login_vm.dart';
 import '../../features/onboarding/data/onboarding_repository.dart';
 import '../../features/onboarding/domain/onboarding_vm.dart';
+import '../../services/app_lifecycle_service/app_lifecycle_service.dart';
 import 'service_locator.dart';
 
 class FeatureDependencies extends ServiceLocator {
@@ -21,6 +22,12 @@ class FeatureDependencies extends ServiceLocator {
 
     // Onboarding
     locator.registerLazySingleton<OnboardingRepository>(() => OnboardingRepository());
-    locator.registerFactory<OnboardingVm>(() => OnboardingVm(repository: locator()));
+    locator.registerFactory<OnboardingVm>(
+      () => OnboardingVm(
+        repository: locator(),
+        buildInfoService: locator(),
+        lifecycleService: AppLifecycleService.instance,
+      ),
+    );
   }
 }

@@ -1,12 +1,26 @@
+import 'package:collection/collection.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:ussd/ussd.dart';
+
 import '../../../core/domain/failure.dart';
 import '../../../core/presentation/presentation.dart';
+import '../../../services/app_lifecycle_service/app_lifecycle_service.dart';
+import '../../../services/build_info_service/build_info_service.dart';
 import '../data/models/country_model.dart';
 import '../data/onboarding_repository.dart';
 
 class OnboardingVm extends AppViewModel {
   final OnboardingRepository _repository;
+  final BuildInfoService _buildInfoService;
+  final AppLifecycleService _lifecycleService;
 
-  OnboardingVm({required OnboardingRepository repository}) : _repository = repository;
+  OnboardingVm({
+    required OnboardingRepository repository,
+    required BuildInfoService buildInfoService,
+    required AppLifecycleService lifecycleService,
+  }) : _repository = repository,
+       _buildInfoService = buildInfoService,
+       _lifecycleService = lifecycleService;
 
   // Controllers for dropdowns
   final countryController = DropdownValueController<CountryModel>();
@@ -24,6 +38,11 @@ class OnboardingVm extends AppViewModel {
   int? _selectedSimSlot;
   String? _fetchedPhoneNumber;
 
+  // Permissions
+  bool _smsPermissionGranted = false;
+  bool _callPermissionGranted = false;
+  bool _accessibilityPermissionGranted = false;
+
   // Getters
   List<CountryModel> get countries => _countries;
 
@@ -32,18 +51,32 @@ class OnboardingVm extends AppViewModel {
   bool get countriesLoaded => _countriesLoaded;
 
   bool get providersLoaded => _providersLoaded;
+
   bool get networkPackFetched => _networkPackFetched;
+
   bool get phoneNumberFetched => _phoneNumberFetched;
 
   CountryModel? get selectedCountry => countryController.value;
 
   ProviderModel? get selectedProvider => providerController.value;
+
   int? get selectedSimSlot => _selectedSimSlot;
+
   String? get fetchedPhoneNumber => _fetchedPhoneNumber;
+
+  bool get smsPermissionGranted => _smsPermissionGranted;
+
+  bool get callPermissionGranted => _callPermissionGranted;
+
+  bool get accessibilityPermissionGranted => _accessibilityPermissionGranted;
+
+  bool get allPermissionsGranted =>
+      _smsPermissionGranted && _callPermissionGranted && _accessibilityPermissionGranted;
 
   bool get canProceedFromCountrySelection => selectedCountry != null;
 
   bool get canProceedFromProviderSelection => selectedProvider != null;
+
   bool get canProceedFromSimSlotSelection => _selectedSimSlot != null;
 
   @override
@@ -59,12 +92,21 @@ class OnboardingVm extends AppViewModel {
 
     setState(VmState.busy);
 
-    final response = await _repository.getCountries();
+    final (response, localeInfo) = await (
+      _repository.getCountries(),
+      _buildInfoService.localeInfo,
+    ).wait;
+
     if (response.isSuccessful) {
       _countries = response.data!;
       countryController.options = _countries;
       _countriesLoaded = true;
+      final country = _countries.firstWhereOrNull(
+        (c) => c.code.toLowerCase() == localeInfo.countryCode.toLowerCase(),
+      );
       setState(VmState.none);
+
+      onCountrySelected(country);
     } else {
       handleErrorAndSetVmState(response.error!);
     }
@@ -138,6 +180,48 @@ class OnboardingVm extends AppViewModel {
       setState(VmState.none);
     } catch (e) {
       handleErrorAndSetVmState(ServerFailure(message: 'Failed to fetch network pack'));
+    }
+  }
+
+  Future<void> requestSmsPermission() async {
+    if (!_smsPermissionGranted) {
+      final permission = await Permission.sms.request();
+      _smsPermissionGranted = permission.isGranted;
+      setState();
+    }
+  }
+
+  Future<void> requestCallPermission() async {
+    if (!_callPermissionGranted) {
+      final permission = await Permission.phone.request();
+      _callPermissionGranted = permission.isGranted;
+      setState();
+    }
+  }
+
+  void _accessibilityPermissionListener(bool isAppPaused) {
+    if (!isAppPaused) {
+      requestAccessibilityPermission();
+    }
+  }
+
+  Future<void> requestAccessibilityPermission() async {
+    if (!_accessibilityPermissionGranted) {
+      try {
+        final isSetup = await Ussd.instance.setup();
+        _accessibilityPermissionGranted = isSetup;
+        if (_accessibilityPermissionGranted) {
+          _lifecycleService.removeListener(_accessibilityPermissionListener);
+        }
+        setState();
+      } on AccessibilityPermissionRequiredException {
+        await Ussd.instance.openAccessibilitySettings();
+
+        _lifecycleService.addListener(_accessibilityPermissionListener);
+        setState();
+      } on UssdDialerException catch (e) {
+        handleErrorAndSetVmState(ServerFailure(message: e.message));
+      }
     }
   }
 

@@ -2,6 +2,11 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        maven {
+            // [required] aar plugin
+            url = uri("${project(":ussd").projectDir}/build")
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/presentation/presentation.dart';
+import '../../domain/onboarding_vm.dart';
 
 class PermissionsDisclosurePage extends StatelessWidget {
   const PermissionsDisclosurePage({super.key, required this.onContinue, required this.onBack});
@@ -38,31 +40,43 @@ class PermissionsDisclosurePage extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildPermissionItem(
-                      context: context,
-                      icon: Icons.sms_outlined,
-                      title: 'Enable SMS',
-                      description:
-                          'Required to read SMS messages for transaction confirmations and OTP verification.',
-                      isEnabled: true,
+                    AppViewSelector<OnboardingVm, bool>(
+                      selector: (vm) => vm.smsPermissionGranted,
+                      builder: (smsPermissionGranted, _) => _buildPermissionItem(
+                        context: context,
+                        icon: Icons.sms_outlined,
+                        title: 'Enable SMS',
+                        description:
+                            'Required to read SMS messages for transaction confirmations and OTP verification.',
+                        isEnabled: smsPermissionGranted,
+                        onTap: context.read<OnboardingVm>().requestSmsPermission,
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    _buildPermissionItem(
-                      context: context,
-                      icon: Icons.call_outlined,
-                      title: 'Enable Call',
-                      description:
-                          'Required to make USSD calls to your network provider for financial services.',
-                      isEnabled: true,
+                    AppViewSelector<OnboardingVm, bool>(
+                      selector: (vm) => vm.callPermissionGranted,
+                      builder: (callPermissionGranted, _) => _buildPermissionItem(
+                        context: context,
+                        icon: Icons.call_outlined,
+                        title: 'Enable Call',
+                        description:
+                            'Required to make USSD calls to your network provider for financial services.',
+                        isEnabled: callPermissionGranted,
+                        onTap: context.read<OnboardingVm>().requestCallPermission,
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    _buildPermissionItem(
-                      context: context,
-                      icon: Icons.accessibility_outlined,
-                      title: 'Enable Accessibility',
-                      description:
-                          'Required to automate USSD interactions and provide seamless user experience.',
-                      isEnabled: true,
+                    AppViewSelector<OnboardingVm, bool>(
+                      selector: (vm) => vm.accessibilityPermissionGranted,
+                      builder: (accessibilityPermissionGranted, _) => _buildPermissionItem(
+                        context: context,
+                        icon: Icons.accessibility_outlined,
+                        title: 'Enable Accessibility',
+                        description:
+                            'Required to automate USSD interactions and provide seamless user experience.',
+                        isEnabled: accessibilityPermissionGranted,
+                        onTap: context.read<OnboardingVm>().requestAccessibilityPermission,
+                      ),
                     ),
                   ],
                 ),
@@ -99,10 +113,14 @@ class PermissionsDisclosurePage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Continue button
-            AppButton.primary(
-              label: 'Continue',
-              onPressed: onContinue,
-              view: 'PermissionsDisclosurePage',
+            AppViewSelector<OnboardingVm, bool>(
+              selector: (vm) => vm.allPermissionsGranted,
+              builder: (allPermissionsGranted, _) => AppButton.primary(
+                label: 'Continue',
+                enabled: allPermissionsGranted,
+                onPressed: onContinue,
+                view: 'PermissionsDisclosurePage',
+              ),
             ),
 
             const SizedBox(height: 32),
@@ -118,54 +136,61 @@ class PermissionsDisclosurePage extends StatelessWidget {
     required String title,
     required String description,
     required bool isEnabled,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
+    return InkWell(
+      onTap: onTap,
+      child: Material(
         color: context.colors.grey100,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.colors.grey300),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: context.colors.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: context.colors.primaryColor, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: context.styles.body16SemiBold),
-                const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: context.styles.body14Regular.copyWith(
-                    color: context.colors.grey700,
-                    height: 1.4,
-                  ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: context.colors.grey300),
+        ),
+
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: context.colors.primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ],
-            ),
+                child: Icon(icon, color: context.colors.primaryColor, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: context.styles.body16SemiBold),
+                    const SizedBox(height: 8),
+                    Text(
+                      description,
+                      style: context.styles.body14Regular.copyWith(
+                        color: context.colors.grey700,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isEnabled ? context.colors.attitudeSuccessMain : context.colors.grey400,
+                ),
+                child: Icon(Icons.check, size: 16, color: context.colors.textAltColor),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isEnabled ? context.colors.attitudeSuccessMain : context.colors.grey400,
-            ),
-            child: Icon(Icons.check, size: 16, color: context.colors.textAltColor),
-          ),
-        ],
+        ),
       ),
     );
   }
