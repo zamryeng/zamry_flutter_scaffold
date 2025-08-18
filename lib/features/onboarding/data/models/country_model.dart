@@ -14,9 +14,7 @@ class CountryModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CountryModel &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+      other is CountryModel && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -41,9 +39,7 @@ class ProviderModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProviderModel &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+      other is ProviderModel && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;

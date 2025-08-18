@@ -13,7 +13,6 @@ class SelectCountryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: context.colors.backgroundColor,
       appBar: AppBar(

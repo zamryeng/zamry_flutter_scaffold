@@ -20,11 +20,7 @@ class FeatureDependencies extends ServiceLocator {
     );
 
     // Onboarding
-    locator.registerLazySingleton<OnboardingRepository>(
-      () => OnboardingRepository(),
-    );
-    locator.registerFactory<OnboardingVm>(
-      () => OnboardingVm(repository: locator()),
-    );
+    locator.registerLazySingleton<OnboardingRepository>(() => OnboardingRepository());
+    locator.registerFactory<OnboardingVm>(() => OnboardingVm(repository: locator()));
   }
 }

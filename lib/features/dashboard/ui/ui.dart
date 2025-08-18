@@ -1,2 +1,2 @@
-//GENERATED BARREL FILE 
-export 'dashboard_screen.dart'; 
+//GENERATED BARREL FILE
+export 'dashboard_screen.dart';
