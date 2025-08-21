@@ -111,7 +111,7 @@ abstract class AppRepository {
   ///
   /// Returns a [Failure] object representing the exception.
   @protected
-  Failure convertException(e) {
+  Failure convertException(dynamic e) {
     if (e is AppException) {
       return e.toFailure();
     } else if (e is TimeoutException) {

@@ -52,11 +52,15 @@ app.*.map.json
 # Ai
 .cursor/
 
+# build runner
+*.g.dart
+*.config.dart
+
 # Firebase
 firebase_options*.dart
-ios/Runner/GoogleService-Info.plist
+ios/flavors/staging/GoogleService-Info.plist
 ios/flavors/*/GoogleService-Info.plist
 macos/Runner/GoogleService-Info.plist
 macos/flavors/*/GoogleService-Info.plist
-android/app/google-services.json
+android/app/src/staging/google-services.json
 android/app/src/*/google-services.json

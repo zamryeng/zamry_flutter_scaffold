@@ -8,7 +8,7 @@ export 'json_request.dart';
 
 /// Type alias for JSON data representation.
 ///
-/// This is a convenient alias for Map<String, dynamic> used throughout
+/// This is a convenient alias for `Map<String, dynamic>` used throughout
 /// the network service for JSON request and response data.
 typedef Json = Map<String, dynamic>;
 
