@@ -39,7 +39,7 @@ abstract class RestNetworkService {
   /// The base URL for all network requests.
   ///
   /// This URL is prepended to all endpoint paths in requests.
-  /// It should include the protocol (http/https) and domain, 
+  /// It should include the protocol (http/https) and domain,
   /// optionally with a path prefix for API versioning.
   @protected
   final String baseUrl;

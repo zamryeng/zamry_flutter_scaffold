@@ -28,13 +28,13 @@ import '../app_lifecycle_service/app_lifecycle_service.dart';
 /// class MyAnalyticsService extends AnalyticsService {
 ///   @override
 ///   NavigatorObserver get navigatorObserver => MyNavigatorObserver();
-///   
+///
 ///   @override
 ///   Future<void> logEvent(String name, {Map<String, Object>? properties}) async {
 ///     if (!isRecording) return;
 ///     // Send event to analytics provider
 ///   }
-///   
+///
 ///   @override
 ///   Future<void> logInUser(AppUser user) async {
 ///     if (!isRecording) return;
