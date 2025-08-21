@@ -2,8 +2,8 @@ name: PR Analysis and Auto-fix
 
 on:
   pull_request:
-    branches: [develop, main, prod]
-    types: [opened, ready_for_review, synchronize]
+    branches: [ develop, main, prod ]
+    types: [ opened, ready_for_review, synchronize ]
 env:
   flutter_version: "3.32.0"
 
@@ -30,17 +30,20 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
           ref: ${{ github.head_ref }}
-      
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.flutter_version }}
           channel: 'stable'
           cache: true
-      
+
       - name: Get Flutter dependencies
         run: flutter pub get
-      
+
+      - name: Run build runner builds
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Run dart fix
         id: dart_fix
         run: |
@@ -68,7 +71,7 @@ jobs:
             echo "fixes_applied=false" >> $GITHUB_OUTPUT
             echo "✅ No fixes applied by dart fix"
           fi
-      
+
       - name: Run format-project script
         id: format_project
         run: |
@@ -107,7 +110,7 @@ jobs:
             echo "formatting_applied=false" >> $GITHUB_OUTPUT
             echo "✅ No formatting changes needed"
           fi
-      
+
       - name: Commit fixes and formatting changes
         id: commit_changes
         if: steps.dart_fix.outputs.fixes_applied == 'true' || steps.format_project.outputs.formatting_applied == 'true'
@@ -139,7 +142,7 @@ jobs:
           git push origin ${{ github.head_ref }}
           echo "changes_committed=true" >> $GITHUB_OUTPUT
           echo "✅ Changes committed and pushed to PR branch"
-      
+
       - name: Run dart analyze
         id: analyze
         run: |
@@ -179,7 +182,7 @@ jobs:
           # Clean up temporary files
           rm -f analyze_output.txt
         continue-on-error: true
-      
+
       - name: Create or update PR comment
         uses: actions/github-script@v7
         with:
@@ -243,7 +246,7 @@ jobs:
                 body: commentBody
               });
             }
-      
+
       - name: Block PR if analysis fails
         if: steps.analyze.outputs.analysis_passed != 'true'
         run: |

@@ -166,7 +166,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
         },
         child: ValueListenableBuilder(
           valueListenable: _errorNotifier,
-          builder: (_, error, __) => Column(
+          builder: (_, error, _) => Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

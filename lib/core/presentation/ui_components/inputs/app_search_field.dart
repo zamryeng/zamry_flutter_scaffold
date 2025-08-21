@@ -6,13 +6,14 @@ class AppSearchField extends StatelessWidget {
   const AppSearchField({
     super.key,
     this.hint,
-    required this.controller,
+    this.controller,
     this.onChanged,
     this.onTap,
     this.onEditComplete,
     this.autoFocus = false,
     this.clearCallback,
   });
+
   final bool autoFocus;
   final String? hint;
   final TextEditingController? controller;
