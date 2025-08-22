@@ -58,9 +58,7 @@ app.*.map.json
 
 # Firebase
 firebase_options*.dart
-ios/flavors/staging/GoogleService-Info.plist
 ios/flavors/*/GoogleService-Info.plist
 macos/Runner/GoogleService-Info.plist
 macos/flavors/*/GoogleService-Info.plist
-android/app/src/staging/google-services.json
 android/app/src/*/google-services.json
