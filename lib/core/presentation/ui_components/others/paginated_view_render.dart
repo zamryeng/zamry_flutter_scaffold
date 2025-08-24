@@ -28,6 +28,7 @@ class PaginatedViewRender<E extends PaginatedDataViewModel<T>, T> extends Statel
   final Iterable<T> Function(E)? overrideDataList;
   final Widget Function(E vm)? overrideDataListBuilder;
   final scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     final listToUse = overrideDataList != null ? overrideDataList!(vm) : vm.data;
@@ -45,7 +46,7 @@ class PaginatedViewRender<E extends PaginatedDataViewModel<T>, T> extends Statel
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   for (final item in listToUse) itemBuilder!(context, item),
-                  if (vm.isBusy)
+                  if (vm.uiState.isLoading)
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: SizedBox.square(dimension: 48, child: AppLoadingIndicator()),
@@ -53,7 +54,7 @@ class PaginatedViewRender<E extends PaginatedDataViewModel<T>, T> extends Statel
                 ],
               ),
             );
-    } else if (vm.isBusy) {
+    } else if (vm.uiState.isLoading) {
       child = loadingState != null
           ? loadingState!(vm)
           : const Align(

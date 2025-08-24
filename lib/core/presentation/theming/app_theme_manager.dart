@@ -17,6 +17,7 @@ class AppThemeManager extends AppViewModel {
       _darkTheme = darkTheme;
 
   ThemeData? get lightTheme => _lightTheme.data;
+
   ThemeData? get darkTheme => _darkTheme?.data;
 
   ThemeMode get themeMode {
@@ -59,6 +60,6 @@ class AppThemeManager extends AppViewModel {
     _themeMode = mode;
     final localStore = ServiceLocator.get<LocalStorageService>();
     localStore.saveString(LocalStoreKeys.THEME_MODE, themeMode.name);
-    setState();
+    setState(() {});
   }
 }

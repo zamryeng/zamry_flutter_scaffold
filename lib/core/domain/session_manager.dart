@@ -26,7 +26,9 @@ class SessionManager extends AppViewModel {
   });
 
   bool get isOpen => _sessionIsOpen;
+
   String? get accessToken => _sessionIsOpen ? _token : null;
+
   AppUser get currentUser => _currentUser;
 
   Map<String, String> sessionHeaders(bool withToken) {
@@ -46,7 +48,7 @@ class SessionManager extends AppViewModel {
     errorLogService.connectUser(_currentUser);
     analyticsService.logInUser(_currentUser);
 
-    setState();
+    setState(() {});
   }
 
   Future<void> close() async {
@@ -61,7 +63,7 @@ class SessionManager extends AppViewModel {
   bool updateUser(AppUser user) {
     if (_sessionIsOpen) {
       _currentUser = user;
-      setState();
+      setState(() {});
       errorLogService.connectUser(_currentUser);
       analyticsService.logInUser(_currentUser);
       return true;

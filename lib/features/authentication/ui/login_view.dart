@@ -26,7 +26,7 @@ class LoginView extends StatelessWidget {
             AppTextField(controller: vm.passwordField, label: context.translations.password),
             SizedBox(height: 16),
             AppViewSelector<LoginVm, bool>(
-              selector: (vm) => vm.isBusy,
+              selector: (vm) => vm.loginUiState.isLoading,
               builder: (isBusy, child) => AppButton.primary(
                 onPressed: vm.login,
                 busy: isBusy,
@@ -34,7 +34,7 @@ class LoginView extends StatelessWidget {
               ),
             ),
             AppViewSelector<LoginVm, bool>(
-              selector: (vm) => vm.hasEncounteredError,
+              selector: (vm) => vm.loginUiState.isError,
               builder: (hasEncounteredError, child) => hasEncounteredError
                   ? Text('Login failed - ${vm.lastFailure?.message ?? ''}')
                   : const SizedBox.shrink(),
