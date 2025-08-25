@@ -8,7 +8,7 @@ export 'json_request.dart';
 
 /// Type alias for JSON data representation.
 ///
-/// This is a convenient alias for Map<String, dynamic> used throughout
+/// This is a convenient alias for `Map<String, dynamic>` used throughout
 /// the network service for JSON request and response data.
 typedef Json = Map<String, dynamic>;
 
@@ -39,7 +39,7 @@ abstract class RestNetworkService {
   /// The base URL for all network requests.
   ///
   /// This URL is prepended to all endpoint paths in requests.
-  /// It should include the protocol (http/https) and domain, 
+  /// It should include the protocol (http/https) and domain,
   /// optionally with a path prefix for API versioning.
   @protected
   final String baseUrl;

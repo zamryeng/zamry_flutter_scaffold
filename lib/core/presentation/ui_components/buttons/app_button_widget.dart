@@ -9,6 +9,7 @@ enum _ButtonType {
   text;
 
   bool get isPrimary => this == primary;
+
   bool get isSecondary => this == secondary;
 }
 
@@ -102,66 +103,76 @@ class AppButton extends StatelessWidget {
       );
     }
 
-    return TextButton(
-      onPressed: enabled && !busy
-          ? () {
-              FocusScope.of(context).unfocus();
-              onPressed();
-              AnalyticsService.instance.logEvent(
-                'Button Pressed',
-                properties: {
-                  'Name': label,
-                  'Location': view?.toString() ?? context.immediateAncestor,
-                  'Type': _type.name,
-                },
-              );
-            }
-          : null,
-      style: ButtonStyle(
-        splashFactory: InkSplash.splashFactory,
-        minimumSize: WidgetStateProperty.all(wrap ? const Size(40, 48) : const Size.fromHeight(48)),
-        padding: WidgetStateProperty.all(
-          busy ? const EdgeInsets.all(4) : const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        ),
-        backgroundColor: WidgetStateColor.resolveWith((states) {
-          if (!_type.isPrimary) return Colors.transparent;
-          if (states.contains(WidgetState.disabled)) {
-            return colors.grey600;
-          }
-          if (states.contains(WidgetState.pressed) || states.contains(WidgetState.focused)) {
-            return colors.attitudeSuccessMain;
-          }
-          if (states.contains(WidgetState.hovered)) {
-            return colors.attitudeWarningLight;
-          }
-          return color ?? colors.primaryColor;
-        }),
-        shape: WidgetStateProperty.resolveWith((states) {
-          if (_type == _ButtonType.text) return null;
-
-          Color? getBorderColor(Set<WidgetState> states) {
-            if (states.contains(WidgetState.pressed)) {
-              return tColor.withAlpha(204);
-            }
-            if (!_type.isSecondary) return null;
+    return Semantics(
+      button: true,
+      label: label,
+      enabled: enabled && !busy,
+      child: TextButton(
+        isSemanticButton: false,
+        onPressed: enabled && !busy
+            ? () {
+                FocusScope.of(context).unfocus();
+                onPressed();
+                AnalyticsService.instance.logEvent(
+                  'Button Pressed',
+                  properties: {
+                    'Name': label,
+                    'Location': view?.toString() ?? context.immediateAncestor,
+                    'Type': _type.name,
+                  },
+                );
+              }
+            : null,
+        style: ButtonStyle(
+          splashFactory: InkSplash.splashFactory,
+          minimumSize: WidgetStateProperty.all(
+            wrap ? const Size(40, 48) : const Size.fromHeight(48),
+          ),
+          padding: WidgetStateProperty.all(
+            busy
+                ? const EdgeInsets.all(4)
+                : const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          ),
+          backgroundColor: WidgetStateColor.resolveWith((states) {
+            if (!_type.isPrimary) return Colors.transparent;
             if (states.contains(WidgetState.disabled)) {
               return colors.grey600;
             }
-            // if (states.contains(WidgetState.pressed)) {
-            //   return tColor;
-            // }
-            return tColor;
-          }
+            if (states.contains(WidgetState.pressed) || states.contains(WidgetState.focused)) {
+              return colors.attitudeSuccessMain;
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return colors.attitudeWarningLight;
+            }
+            return color ?? colors.primaryColor;
+          }),
+          shape: WidgetStateProperty.resolveWith((states) {
+            if (_type == _ButtonType.text) return null;
 
-          final color = getBorderColor(states);
+            Color? getBorderColor(Set<WidgetState> states) {
+              if (states.contains(WidgetState.pressed)) {
+                return tColor.withAlpha(204);
+              }
+              if (!_type.isSecondary) return null;
+              if (states.contains(WidgetState.disabled)) {
+                return colors.grey600;
+              }
+              // if (states.contains(WidgetState.pressed)) {
+              //   return tColor;
+              // }
+              return tColor;
+            }
 
-          return RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(wrap ? 48 : 20),
-            side: color != null ? BorderSide(width: 1, color: color) : BorderSide.none,
-          );
-        }),
+            final color = getBorderColor(states);
+
+            return RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(wrap ? 48 : 20),
+              side: color != null ? BorderSide(width: 1, color: color) : BorderSide.none,
+            );
+          }),
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }
