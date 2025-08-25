@@ -18,7 +18,7 @@ void mainApp(FirebaseOptions options) {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp(options: options);
-      configureDependencies();
+      ServiceLocator.registerDependencies();
       await AppThemeManager.initialise();
       runApp(const ThisApplication());
     },

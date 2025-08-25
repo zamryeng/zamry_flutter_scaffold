@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 import 'service_locator.config.dart';
 
 @InjectableInit(initializerName: 'init', preferRelativeImports: true, asExtension: true)
-void configureDependencies() => ServiceLocator.get.init();
+void _configureDependencies() => ServiceLocator.get.init();
 
 abstract class ServiceLocator {
   final GetIt locator;
@@ -16,10 +16,11 @@ abstract class ServiceLocator {
   FutureOr<void> register();
 
   static final get = GetIt.instance;
+  static void registerDependencies() => _configureDependencies();
 
   static Future<void> reset() async {
     await get.reset();
-    configureDependencies();
+    _configureDependencies();
   }
 
   static void resetInstance<T extends Object>() {
