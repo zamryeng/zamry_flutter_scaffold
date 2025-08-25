@@ -26,7 +26,8 @@ abstract class ServiceModule {
       FlutterSecureLocalStorage(flutterSecureStorage: const FlutterSecureStorage());
 
   @singleton
-  ErrorLogService get errorLogService => ErrorLogService.instance..initialise(shouldLog: EnvironmentConfig.isProd);
+  ErrorLogService get errorLogService =>
+      ErrorLogService.instance..initialise(shouldLog: EnvironmentConfig.isProd);
 
   @lazySingleton
   MessageDisplayHandler get messageDisplayHandler => ToastErrorHandler();
