@@ -1,7 +1,10 @@
+import 'package:injectable/injectable.dart';
+
 import '../../../core/data/data.dart';
 import '../../../services/rest_network_service/rest_network_service.dart';
 import '../domain/models/user_model.dart';
 
+@lazySingleton
 class AuthenticationRepo extends AppRepository {
   final RestNetworkService _networkService;
 

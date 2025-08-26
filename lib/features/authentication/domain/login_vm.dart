@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../core/domain/app_view_model.dart';
 import '../data/authentication_repo.dart';
 
+@injectable
 class LoginVm extends AppViewModel {
   final AuthenticationRepo _authRepo;
 

@@ -175,6 +175,39 @@ class AppColors extends ThemeExtension<AppColors> {
 
   @override
   AppColors lerp(covariant AppColors? other, double t) {
-    return other ?? this;
+    if (other is! AppColors) return this;
+
+    return AppColors(
+      primaryColor: Color.lerp(primaryColor, other.primaryColor, t)!,
+      primary200: Color.lerp(primary200, other.primary200, t)!,
+      secondaryColor: Color.lerp(secondaryColor, other.secondaryColor, t)!,
+      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t)!,
+      overlayBackground: Color.lerp(overlayBackground, other.overlayBackground, t)!,
+      textColor: Color.lerp(textColor, other.textColor, t)!,
+      textAltColor: Color.lerp(textAltColor, other.textAltColor, t)!,
+      grey900: Color.lerp(grey900, other.grey900, t)!,
+      grey800: Color.lerp(grey800, other.grey800, t)!,
+      grey700: Color.lerp(grey700, other.grey700, t)!,
+      grey600: Color.lerp(grey600, other.grey600, t)!,
+      grey500: Color.lerp(grey500, other.grey500, t)!,
+      grey400: Color.lerp(grey400, other.grey400, t)!,
+      grey300: Color.lerp(grey300, other.grey300, t)!,
+      grey200: Color.lerp(grey200, other.grey200, t)!,
+      grey100: Color.lerp(grey100, other.grey100, t)!,
+      attitudeErrorLight: Color.lerp(attitudeErrorLight, other.attitudeErrorLight, t)!,
+      attitudeErrorMain: Color.lerp(attitudeErrorMain, other.attitudeErrorMain, t)!,
+      attitudeErrorDark: Color.lerp(attitudeErrorDark, other.attitudeErrorDark, t)!,
+      attitudeSuccessLight: Color.lerp(attitudeSuccessLight, other.attitudeSuccessLight, t)!,
+      attitudeSuccessMain: Color.lerp(attitudeSuccessMain, other.attitudeSuccessMain, t)!,
+      attitudeSuccessDark: Color.lerp(attitudeSuccessDark, other.attitudeSuccessDark, t)!,
+      attitudeWarningLight: Color.lerp(attitudeWarningLight, other.attitudeWarningLight, t)!,
+      attitudeWarningMain: Color.lerp(attitudeWarningMain, other.attitudeWarningMain, t)!,
+      attitudeWarningDark: Color.lerp(attitudeWarningDark, other.attitudeWarningDark, t)!,
+      attitudeInfoLight: Color.lerp(attitudeInfoLight, other.attitudeInfoLight, t)!,
+      attitudeInfoMain: Color.lerp(attitudeInfoMain, other.attitudeInfoMain, t)!,
+      attitudeInfoDark: Color.lerp(attitudeInfoDark, other.attitudeInfoDark, t)!,
+      brown300: Color.lerp(brown300, other.brown300, t)!,
+      brown900: Color.lerp(brown900, other.brown900, t)!,
+    );
   }
 }

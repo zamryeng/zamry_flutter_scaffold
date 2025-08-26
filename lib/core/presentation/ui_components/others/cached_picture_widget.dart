@@ -45,12 +45,12 @@ class AppCachedImage extends StatelessWidget {
         imageUrl: imageUrl!,
         fadeOutDuration: const Duration(milliseconds: 500),
         fadeInDuration: const Duration(milliseconds: 500),
-        placeholder: (_, __) => Container(
+        placeholder: (_, _) => Container(
           color: color,
           alignment: Alignment.center,
           child: placeholder ?? Icon(Icons.image, color: AppColors.of(context).primaryColor),
         ),
-        errorWidget: (_, __, ___) => Container(
+        errorWidget: (_, _, _) => Container(
           color: color,
           alignment: Alignment.center,
           child: placeholder ?? Icon(Icons.image, color: AppColors.of(context).grey700),
