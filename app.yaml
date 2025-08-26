@@ -1,11 +1,11 @@
 # Search and replace the values below with the correct values for your app
-app_name: Zamry App
-launcher_name: Zamry App
-package_name: zamry_app
-description: "A zamry template app"
-bundle_id_android: com.zamry.app
-bundle_id_ios: com.zamry.app
-firebase_project_id_prod: zamry-app-prod
+app_name: Zamry Wallet
+launcher_name: Zamry Wallet
+package_name: zamry_wallet
+description: "Zamry's non-custodial wallet for fiat and crypto"
+bundle_id_android: com.zamry.wallet
+bundle_id_ios: com.zamry.wallet
+firebase_project_id_prod: zamry-wallet
 firebase_project_id_staging: zamry-app
 flutter_version: 3.32.0
 

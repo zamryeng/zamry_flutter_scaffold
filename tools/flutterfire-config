@@ -46,23 +46,23 @@ case $ENVIRONMENT in
       --project=zamry-app \
       --platforms=ios,android \
       --out=lib/main/firebase_options_staging.dart \
-      --ios-bundle-id=com.zamry.app.staging \
+      --ios-bundle-id=com.zamry.wallet.staging \
       --ios-out=ios/flavors/staging/GoogleService-Info.plist \
       --ios-build-config=$IOS_BUILD_CONFIG \
-      --android-package-name=com.zamry.app.staging \
+      --android-package-name=com.zamry.wallet.staging \
       --android-out=android/app/src/staging/google-services.json \
       --yes
     ;;
   prod)
     echo "Generating Firebase config for ${BUILD_CONFIG_CAP} ${ENVIRONMENT_CAP} environment..."
     flutterfire config \
-      --project=zamry-app \
+      --project=zamry-wallet \
       --platforms=ios,android \
       --out=lib/main/firebase_options_prod.dart \
-      --ios-bundle-id=com.zamry.app \
+      --ios-bundle-id=com.zamry.wallet \
       --ios-out=ios/flavors/prod/GoogleService-Info.plist \
       --ios-build-config=$IOS_BUILD_CONFIG \
-      --android-package-name=com.zamry.app \
+      --android-package-name=com.zamry.wallet \
       --android-out=android/app/src/prod/google-services.json \
       --yes
     ;;
