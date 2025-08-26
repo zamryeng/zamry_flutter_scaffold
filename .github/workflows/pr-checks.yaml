@@ -36,7 +36,7 @@ jobs:
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ORG_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 1
 
       - name: Setup Flutter
@@ -45,6 +45,10 @@ jobs:
           flutter-version: ${{ env.flutter_version }}
           channel: 'stable'
           cache: true
+
+      - name: Configure Git for private dependencies
+        run: |
+          git config --global url."https://${{ secrets.ORG_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
       - name: Get Flutter dependencies
         run: flutter pub get
