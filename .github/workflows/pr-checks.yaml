@@ -1,7 +1,7 @@
 name: PR Analysis and Auto-fix
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [ develop, main, prod ]
     types: [ opened, ready_for_review, synchronize ]
 env:
