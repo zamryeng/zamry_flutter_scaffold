@@ -23,8 +23,14 @@ jobs:
     name: Analyze, Fix, and Format Flutter Code
     runs-on: ubuntu-latest
     
-    # Skip if PR is draft (unless it was just marked ready for review)
-    if: github.event.pull_request.draft == false
+    # Skip if PR is draft OR if this is a duplicate run
+    # For internal PRs: only run on pull_request trigger
+    # For fork PRs: only run on pull_request_target trigger
+    if: |
+      github.event.pull_request.draft == false && (
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
+        (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
+      )
     
     permissions:
       contents: write
