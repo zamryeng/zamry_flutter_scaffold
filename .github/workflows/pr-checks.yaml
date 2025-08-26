@@ -153,6 +153,7 @@ jobs:
 
       - name: Run dart analyze
         id: analyze
+        continue-on-error: true
         run: |
           echo "Running dart analyze..."
           
@@ -189,10 +190,10 @@ jobs:
           
           # Clean up temporary files
           rm -f analyze_output.txt
-        continue-on-error: true
 
       - name: Create or update PR comment
         uses: actions/github-script@v7
+        continue-on-error: true
         with:
           script: |
             const { data: comments } = await github.rest.issues.listComments({
