@@ -1,9 +1,16 @@
 name: PR Analysis and Auto-fix
 
 on:
+  # Use pull_request for internal PRs (has all triggers working)
+  pull_request:
+    branches: [ develop, main, prod ]
+    types: [ opened, synchronize, ready_for_review, reopened ]
+  
+  # Use pull_request_target for fork PRs (has comment permissions)
   pull_request_target:
     branches: [ develop, main, prod ]
-    types: [ opened, ready_for_review, synchronize ]
+    types: [ opened, synchronize, ready_for_review, reopened ]
+    
 env:
   flutter_version: "3.32.0"
 
