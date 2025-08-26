@@ -42,7 +42,7 @@ jobs:
         run: flutter pub get
 
       - name: Run build runner builds
-        run: dart pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Run dart fix
         id: dart_fix
