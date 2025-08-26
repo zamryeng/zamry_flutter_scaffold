@@ -8,7 +8,7 @@ class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     this.fieldKey,
-    required this.controller,
+    this.controller,
     this.label,
     this.hint,
     this.isRequired = false,
@@ -36,7 +36,7 @@ class AppTextField extends StatefulWidget {
   const AppTextField.secret({
     super.key,
     this.fieldKey,
-    required this.controller,
+    this.controller,
     this.label,
     this.hint,
     this.isRequired = false,
@@ -68,7 +68,7 @@ class AppTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final ValueChanged<bool>? onFocusChange;
   final bool autoFocus;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
   final VoidCallback? onEditComplete;
@@ -92,6 +92,7 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
+  late TextEditingController _controller;
   late final FocusNode _focusNode;
   late bool _visible;
 
@@ -99,11 +100,39 @@ class _AppTextFieldState extends State<AppTextField> {
   void initState() {
     _visible = !widget._isSecret;
     _focusNode = widget.focusNode ?? FocusNode();
+    _controller = widget.controller ?? TextEditingController();
     final focusChangeCallback = widget.onFocusChange;
     if (focusChangeCallback != null) {
       _focusNode.addListener(() => focusChangeCallback(_focusNode.hasFocus));
     }
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant AppTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.controller != oldWidget.controller) {
+      _controller = widget.controller ?? _controller;
+    }
+
+    if (widget.focusNode != widget.focusNode) {
+      if (widget.focusNode != null) {
+        _focusNode.removeListener(() => widget.onFocusChange?.call(_focusNode.hasFocus));
+        _focusNode.dispose();
+      }
+      _focusNode = widget.focusNode ?? _focusNode;
+      if (widget.onFocusChange != null && widget.focusNode != null) {
+        _focusNode.addListener(() => widget.onFocusChange!(_focusNode.hasFocus));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) _focusNode.dispose();
+    if (widget.controller == null) _controller.dispose();
+    super.dispose();
   }
 
   void _toggleVisibility() {
@@ -161,7 +190,7 @@ class _AppTextFieldState extends State<AppTextField> {
           onTap: widget.onTap,
           onEditingComplete: widget.onEditComplete ?? () => FocusScope.of(context).nextFocus(),
           style: styles.value16Medium.copyWith(
-            letterSpacing: (!_visible && widget.controller.text.isNotEmpty) ? 7 : 0,
+            letterSpacing: (!_visible && _controller.text.isNotEmpty) ? 7 : 0,
           ),
           inputFormatters: widget.formatters,
           textAlignVertical: TextAlignVertical.center,

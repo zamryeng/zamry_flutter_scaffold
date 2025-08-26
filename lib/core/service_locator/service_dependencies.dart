@@ -1,8 +1,8 @@
-import 'dart:async';
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../main/environment_config.dart';
 import '../../services/analytics_service/analytics_service.dart';
@@ -19,44 +19,40 @@ import '../domain/session_manager.dart';
 import '../presentation/ui_components/overlays/app_toast_widget.dart';
 import 'service_locator.dart';
 
-class ServiceDependencies extends ServiceLocator {
-  ServiceDependencies(super.locator);
+@module
+abstract class ServiceModule {
+  @factory
+  LocalStorageService localStorage() =>
+      FlutterSecureLocalStorage(flutterSecureStorage: const FlutterSecureStorage());
 
-  @override
-  FutureOr<void> register() {
-    locator.registerLazySingleton(
-      () => SessionManager(
-        localStorageService: locator(),
-        errorLogService: ErrorLogService.instance,
-        analyticsService: locator(),
-      ),
-    );
+  @singleton
+  ErrorLogService get errorLogService =>
+      ErrorLogService.instance..initialise(shouldLog: EnvironmentConfig.isProd);
 
-    locator.registerLazySingleton<MessageDisplayHandler>(() => ToastErrorHandler());
+  @lazySingleton
+  MessageDisplayHandler get messageDisplayHandler => ToastErrorHandler();
 
-    locator.registerFactory<LocalStorageService>(
-      () => FlutterSecureLocalStorage(flutterSecureStorage: const FlutterSecureStorage()),
-    );
+  @lazySingleton
+  SessionManager get sessionManager => SessionManager(
+    localStorageService: ServiceLocator.get(),
+    errorLogService: ServiceLocator.get(),
+    analyticsService: ServiceLocator.get(),
+  );
 
-    locator.registerLazySingleton<RestNetworkService>(
-      () => DioNetworkService(
-        sessionManager: locator(),
-        baseUrl: EnvironmentConfig.apiUrl,
-        sendTimeout: Constants.networkTimeoutDuration,
-        isProd: EnvironmentConfig.isProd,
-      ),
-    );
+  @lazySingleton
+  RestNetworkService get restService => DioNetworkService(
+    sessionManager: ServiceLocator.get(),
+    baseUrl: EnvironmentConfig.apiUrl,
+    isProd: EnvironmentConfig.isProd,
+    sendTimeout: Constants.networkTimeoutDuration,
+  );
 
-    locator.registerLazySingleton<AnalyticsService>(() {
-      final service = AnalyticsCombinatorService([
-        FirebaseAnalyticsService(firebaseAnalytics: FirebaseAnalytics.instance),
-      ]);
-      service.configure(EnvironmentConfig.isProd);
-      return service;
-    });
+  @lazySingleton
+  AnalyticsService get analytics => AnalyticsCombinatorService([
+    FirebaseAnalyticsService(firebaseAnalytics: FirebaseAnalytics.instance),
+  ])..configure(EnvironmentConfig.isProd);
 
-    locator.registerLazySingleton<BuildInfoService>(
-      () => BuildInfoServiceImpl(deviceInfoPlugin: DeviceInfoPlugin()),
-    );
-  }
+  @lazySingleton
+  BuildInfoService get buildInfoService =>
+      BuildInfoServiceImpl(deviceInfoPlugin: DeviceInfoPlugin());
 }
