@@ -9,17 +9,34 @@ import '../services/error_logging_service/error_logging_service.dart';
 import '../core/presentation/navigation/app_router.dart';
 import '../core/presentation/presentation.dart';
 import '../services/app_lifecycle_service/app_lifecycle_service.dart';
+import '../services/local_db_service/setup.dart';
+import '../services/local_db_service/sqflite_db_service.dart';
 import '../services/remote_config/remote_config_service.dart';
 import '../utilities/mixins/custom_will_pop_scope_mixin.dart';
 import 'environment_config.dart';
 
 void mainApp(FirebaseOptions options) {
+  debugPrint = (String? message, {int? wrapWidth}) {
+    if (kDebugMode) {
+      debugPrintSynchronously(message, wrapWidth: wrapWidth);
+    }
+  };
+
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp(options: options);
       ServiceLocator.registerDependencies();
       await AppThemeManager.initialise();
+
+      await ServiceLocator.get<SqliteDb>().initialise(
+        ServiceLocator.get(),
+        dbName: 'zamry_app', // TODO(dbName): Update db name
+        onCreate: LocalDbSetup.instance.onCreate,
+        onUpgrade: LocalDbSetup.instance.onUpgrade,
+        onDowngrade: LocalDbSetup.instance.onDowngrade,
+        version: LocalDbSetup.instance.version,
+      );
       runApp(const ThisApplication());
     },
     (error, stack) {
