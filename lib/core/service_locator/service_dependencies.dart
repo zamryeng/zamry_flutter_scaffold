@@ -9,7 +9,7 @@ import '../../services/analytics_service/analytics_service.dart';
 import '../../services/analytics_service/firebase_analytics_service.dart';
 import '../../services/build_info_service/build_info_service.dart';
 import '../../services/error_logging_service/error_logging_service.dart';
-import '../../services/local_db_service/sqflite_db_service.dart';
+import '../../services/local_db_service/sqflite_db.dart';
 import '../../services/local_storage_service/flutter_secure_local_storage_service.dart';
 import '../../services/local_storage_service/local_storage_service.dart';
 import '../../services/rest_network_service/dio_network_service.dart';

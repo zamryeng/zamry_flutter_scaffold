@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/presentation/presentation.dart';
 import '../../../core/service_locator/service_locator.dart';
-import '../../../services/local_db_service/sqflite_db_service.dart';
+import '../../../services/local_db_service/sqflite_db.dart';
 import '../domain/login_vm.dart';
 
 class LoginView extends StatefulWidget {

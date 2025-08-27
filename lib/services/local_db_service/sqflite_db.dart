@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import '../local_storage_service/local_storage_service.dart';
+import 'db_setup.dart';
 
 const _kDbPass = 'DB_PASS';
 
@@ -34,17 +35,13 @@ class SqliteDb {
   /// encryption is paramount hence the dependence on [LocalStorageService]
   /// passed as [service] parameter to retrieve or set the db's password if not set.
   /// It also takes a [dbName] which is used to create/open the local db.
-  /// [onCreate] takes the current db version and returns a string which is
-  /// expected to be a sql script
-  /// [onUpgrade] returns a script for making updates across versions
-  /// [onDowngrade] returns a script for making downgrade updates across versions
+  /// [setup] takes an instance of [DBSetup] which is used to coordinate
+  /// operations on the initialisation of the database with creation, upgrade,
+  /// and downgrade scripts
   Future<void> initialise(
     LocalStorageService service, {
     String dbName = 'zamry',
-    int version = 1,
-    OnCreateRawQueryFn? onCreate,
-    OnDatabaseVersionChangeQueryFn? onUpgrade,
-    OnDatabaseVersionChangeQueryFn? onDowngrade,
+    required DBSetup setup,
   }) async {
     if (_db != null) {
       throw ArgumentError('db already set');
@@ -60,8 +57,8 @@ class SqliteDb {
       '$path/$dbName.db',
       password: password,
       onCreate: (db, version) async {
-        if (onCreate != null) {
-          final cmd = [...onCreate(version).replaceAll('\n', '').split(';')]..remove('');
+        if (setup.onCreate != null) {
+          final cmd = [...setup.onCreate!(version).replaceAll('\n', '').split(';')]..remove('');
           await db.transaction((txn) async {
             for (var sql in [...cmd.map((s) => txn.execute(s))]) {
               await sql;
@@ -70,18 +67,8 @@ class SqliteDb {
         }
       },
       onUpgrade: (db, old, newVersion) async {
-        if (onUpgrade != null) {
-          final cmd = [...onUpgrade(old, newVersion).replaceAll('\n', '').split(';')]..remove('');
-          await db.transaction((txn) async {
-            for (var sql in [...cmd.map((s) => txn.execute(s))]) {
-              await sql;
-            }
-          });
-        }
-      },
-      onDowngrade: (db, oldVersion, newVersion) async {
-        if (onDowngrade != null) {
-          final cmd = [...onDowngrade(oldVersion, newVersion).replaceAll('\n', '').split(';')]
+        if (setup.onUpgrade != null) {
+          final cmd = [...setup.onUpgrade!(old, newVersion).replaceAll('\n', '').split(';')]
             ..remove('');
           await db.transaction((txn) async {
             for (var sql in [...cmd.map((s) => txn.execute(s))]) {
@@ -90,7 +77,19 @@ class SqliteDb {
           });
         }
       },
-      version: version,
+      onDowngrade: (db, oldVersion, newVersion) async {
+        if (setup.onDowngrade != null) {
+          final cmd = [
+            ...setup.onDowngrade!(oldVersion, newVersion).replaceAll('\n', '').split(';'),
+          ]..remove('');
+          await db.transaction((txn) async {
+            for (var sql in [...cmd.map((s) => txn.execute(s))]) {
+              await sql;
+            }
+          });
+        }
+      },
+      version: setup.version,
     );
   }
 
@@ -170,6 +169,22 @@ class SqliteDb {
     int? offset,
     RawQuery? rawQuery,
   }) {
+    final nonNullRetrievalOption =
+        distinct != null ||
+        columns != null ||
+        where != null ||
+        whereArgs != null ||
+        groupBy != null ||
+        having != null ||
+        orderBy != null ||
+        limit != null ||
+        offset != null;
+
+    assert(
+      nonNullRetrievalOption && rawQuery == null || rawQuery != null,
+      'retrieval options have no effect when a raw query is passed',
+    );
+
     if (rawQuery != null) {
       return db.rawQuery(rawQuery.sql, rawQuery.args);
     }

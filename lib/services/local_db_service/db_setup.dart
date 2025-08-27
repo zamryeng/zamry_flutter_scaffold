@@ -1,9 +1,7 @@
-import 'sqflite_db_service.dart';
+import 'sqflite_db.dart';
 
-abstract interface class LocalDbSetup {
-  static const LocalDbSetup instance = _V1LocalDbSetup();
-
-  String onCreate(int version);
+abstract interface class DBSetup {
+  OnCreateRawQueryFn? get onCreate;
 
   OnDatabaseVersionChangeQueryFn? get onUpgrade;
 
@@ -13,11 +11,12 @@ abstract interface class LocalDbSetup {
 }
 
 // TODO(LocalDbSetup): implement v1 setup
-final class _V1LocalDbSetup implements LocalDbSetup {
-  const _V1LocalDbSetup();
+final class V1DbSetup implements DBSetup {
+  const V1DbSetup();
 
   @override
-  String onCreate(int version) => '''
+  OnCreateRawQueryFn? get onCreate => (int version) {
+    return '''
 CREATE TABLE countries (country_code VARCHAR(2) PRIMARY KEY, name VARCHAR(100) NOT NULL, phone_code VARCHAR(2) NOT NULL);
 
 CREATE TABLE owners (
@@ -32,6 +31,7 @@ CREATE TABLE owners (
   FOREIGN KEY(country_code) REFERENCES countries(country_code)
 );
 ''';
+  };
 
   @override
   OnDatabaseVersionChangeQueryFn? get onDowngrade => null;
