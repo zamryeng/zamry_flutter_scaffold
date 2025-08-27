@@ -3,28 +3,87 @@ import 'package:flutter/material.dart';
 import '../service_locator/service_locator.dart';
 import 'failure.dart';
 
-/// Represents the different states a view model can be in.
-///
-/// This enum is used to track the current state of a view model and
-/// helps the UI determine how to display itself based on the state.
-enum VmState {
-  /// The view model is in its initial state with no ongoing operations.
-  none,
+sealed class UiState<T> {
+  const UiState();
 
-  /// The view model is currently performing an operation (e.g., loading data).
-  busy,
+  T get requireData => throw StateError('Data not available for this ui state');
 
-  /// The view model has encountered an error during an operation.
-  error,
+  T? get data => null;
 
-  /// The view model has encountered a network connectivity issue.
-  noConnection,
+  Failure? get failure => null;
+
+  bool get hasData => data != null;
+
+  bool get isUninitialised => switch (this) {
+    Uninitialised() => true,
+    _ => false,
+  };
+
+  bool get isLoading => switch (this) {
+    Loading() => true,
+    _ => false,
+  };
+
+  bool get isSuccess => switch (this) {
+    Success() => true,
+    _ => false,
+  };
+
+  bool get isError => switch (this) {
+    Failure() => true,
+    _ => false,
+  };
+
+  bool get hasNoConnection => failure is NetworkFailure;
+}
+
+class Uninitialised<T> extends UiState<T> {
+  const Uninitialised();
+}
+
+class Success<T> extends UiState<T> {
+  const Success(this.result);
+
+  final T result;
+
+  @override
+  T? get data => result;
+
+  @override
+  T get requireData => result;
+}
+
+class Loading<T> extends UiState<T> {
+  const Loading([this.data]);
+
+  @override
+  final T? data;
+
+  @override
+  T get requireData => hasData ? data! : super.requireData;
+}
+
+class Error<T> extends UiState<T> {
+  const Error(this.error, [this.data]);
+
+  final Failure error;
+  @override
+  final T? data;
+
+  @override
+  T get requireData => hasData ? data! : super.requireData;
+
+  @override
+  Failure? get failure => error;
 }
 
 abstract class MessageDisplayHandler {
   void showError(String message, [String? heading]);
+
   void showSuccess(String message, [String? heading]);
+
   void showWarning(String message, [String? heading]);
+
   void showInfo(String message, [String? heading]);
 }
 
@@ -67,18 +126,12 @@ abstract class AppViewModel extends ChangeNotifier {
   /// if not provided.
   ///
   /// The error handler is used by methods like [handleError] and
-  /// [handleErrorAndSetVmState] to ensure consistent error handling across
+  /// [handleErrorAndSetUiState] to ensure consistent error handling across
   /// all view models in the application.
   ///
   /// If no error handler is provided in the constructor, the default error
   /// handler from the service locator is used.
   final MessageDisplayHandler messageHandler;
-
-  /// The current state of the view model.
-  ///
-  /// This field tracks the current state of the view model and is used
-  /// to determine how the UI should be displayed.
-  VmState _viewState = VmState.none;
 
   /// Whether the view model has been disposed.
   ///
@@ -98,25 +151,10 @@ abstract class AppViewModel extends ChangeNotifier {
   /// or error reporting purposes.
   Failure? get lastFailure => _lastFailure;
 
-  /// The current state of the view model.
-  ///
-  /// This getter provides read-only access to the current state of the view model.
-  /// The UI can use this value to determine how to display itself (e.g., showing
-  /// a loading indicator when the state is [VmState.busy]).
-  VmState get viewState => _viewState;
-
   /// Returns true if the view model has encountered an error, false otherwise.
   ///
   /// This getter checks if the current state is either [VmState.error] or [VmState.noConnection].
   /// It's useful for determining whether to show error UI or disable certain actions.
-  bool get hasEncounteredError => _viewState == VmState.error || _viewState == VmState.noConnection;
-
-  /// Returns true if the view model is currently busy, false otherwise.
-  ///
-  /// This getter checks if the current state is [VmState.busy].
-  /// It's useful for showing loading indicators or disabling user interactions
-  /// during ongoing operations.
-  bool get isBusy => _viewState == VmState.busy;
 
   /// Called by the framework when the object is no longer needed.
   ///
@@ -151,43 +189,11 @@ abstract class AppViewModel extends ChangeNotifier {
   /// setState(VmState.none); // Set to normal state
   /// setState(); // Notify listeners without changing state
   /// ```
+
   @protected
-  void setState([VmState? viewState]) {
-    if (viewState != null) _viewState = viewState;
+  void setState(final VoidCallback onStateUpdate) {
+    onStateUpdate();
     if (!_disposed && hasListeners) notifyListeners();
-  }
-
-  /// Handles [failure] and sets the view model's state accordingly.
-  ///
-  /// This method is a convenience method that combines error handling and state
-  /// management. It calls [handleError] to process the failure and then sets
-  /// the appropriate state based on the type of failure.
-  ///
-  /// If [failure] is a [NetworkFailure], the view model's state is set to
-  /// [VmState.noConnection]. Otherwise, the view model's state is set to
-  /// [VmState.error].
-  ///
-  /// This method is typically called when an operation fails and you want to
-  /// both handle the error and update the UI state.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// try {
-  ///   await performOperation();
-  ///   setState(VmState.none);
-  /// } catch (e) {
-  ///   handleErrorAndSetVmState(Failure(e.toString()));
-  /// }
-  /// ```
-  @protected
-  void handleErrorAndSetVmState(Failure failure, [String? heading]) {
-    handleError(failure);
-
-    if (failure is NetworkFailure) {
-      setState(VmState.noConnection);
-    } else {
-      setState(VmState.error);
-    }
   }
 
   /// Handles a [failure] by displaying an error message and storing the failure.
@@ -211,5 +217,37 @@ abstract class AppViewModel extends ChangeNotifier {
       messageHandler.showError(failure.message);
       _lastFailure = failure;
     }
+  }
+
+  @protected
+  UiState<S> handleErrorAndSetUiState<S>(Error state, [String? heading]) {
+    handleError(state.error, heading);
+
+    return Uninitialised<S>();
+  }
+}
+
+extension UiDataStateX<T> on UiState<T> {
+  UiState<T> loading([T? data]) {
+    if (data != null) return Loading(data);
+
+    return switch (this) {
+      Success<T>(result: final data) => Loading(data),
+      Loading<T>(:final data?) => Loading(data),
+      Error<T>(:final data) => Loading(data),
+      _ => const Loading(),
+    };
+  }
+
+  UiState<T> success(T data) {
+    return Success(data);
+  }
+
+  UiState<T> error(Failure error) {
+    return switch (this) {
+      Success<T>(result: final data) => Error(error, data),
+      Loading<T>(:final data?) => Error(error, data),
+      _ => Error(error),
+    };
   }
 }

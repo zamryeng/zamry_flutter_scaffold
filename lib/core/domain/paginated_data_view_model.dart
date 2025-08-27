@@ -29,6 +29,10 @@ import 'app_view_model.dart';
 /// }
 /// ```
 abstract class PaginatedDataViewModel<T> extends AppViewModel {
+  UiState<List<T>> _uiState = const Uninitialised();
+
+  UiState<List<T>> get uiState => _uiState;
+
   /// The current page number for pagination.
   ///
   /// This field tracks the current page being loaded. It starts at 1
@@ -54,8 +58,7 @@ abstract class PaginatedDataViewModel<T> extends AppViewModel {
   /// This overrides the parent's [hasEncounteredError] to only return true
   /// if there's an error AND no data has been loaded. This prevents showing
   /// error states when there's existing data to display.
-  @override
-  bool get hasEncounteredError => super.hasEncounteredError && !hasData;
+  bool get hasEncounteredError => _uiState.isError && !hasData;
 
   /// Returns true if the view model has loaded any data.
   ///
@@ -123,7 +126,7 @@ abstract class PaginatedDataViewModel<T> extends AppViewModel {
   /// This method implements the common pagination logic:
   /// 1. Checks if the view model is busy or has reached the max pages
   /// 2. Sets the state to busy and calls the abstract [fetchData] method
-  /// 3. Handles errors by calling [handleErrorAndSetVmState]
+  /// 3. Handles errors by calling [handleErrorAndSetUiState]
   /// 4. On success, clears the data list if it's the first page
   /// 5. Adds the new data to the list and increments the page number
   /// 6. Sets the reached max flag if no data was returned
@@ -132,12 +135,16 @@ abstract class PaginatedDataViewModel<T> extends AppViewModel {
   /// This method is called by both [refresh] and [fetchMore] to provide
   /// consistent data fetching behavior.
   Future<void> _fetchData() async {
-    if (isBusy || _reachedMax) return;
-    setState(VmState.busy);
+    if (_uiState.isLoading || _reachedMax) return;
+    setState(() {
+      _uiState = _uiState.loading();
+    });
 
     final fetchHistory = await fetchData(_page);
     if (fetchHistory.hasError) {
-      handleErrorAndSetVmState(fetchHistory.error!);
+      setState(() {
+        _uiState = _uiState.error(fetchHistory.error!);
+      });
     } else {
       if (_page == 1) dataList.clear();
       final data = fetchHistory.data!;
@@ -148,7 +155,9 @@ abstract class PaginatedDataViewModel<T> extends AppViewModel {
       } else {
         _reachedMax = true;
       }
-      setState(VmState.none);
+      setState(() {
+        _uiState = _uiState.success(dataList);
+      });
     }
   }
 }
