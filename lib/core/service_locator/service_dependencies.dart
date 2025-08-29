@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import '../../main/environment_config.dart';
 import '../../services/analytics_service/analytics_service.dart';
 import '../../services/analytics_service/firebase_analytics_service.dart';
+import '../../services/app_lifecycle_service/app_lifecycle_service.dart';
 import '../../services/build_info_service/build_info_service.dart';
 import '../../services/error_logging_service/error_logging_service.dart';
 import '../../services/local_storage_service/flutter_secure_local_storage_service.dart';
@@ -28,7 +27,8 @@ abstract class ServiceModule {
       FlutterSecureLocalStorage(flutterSecureStorage: const FlutterSecureStorage());
 
   @singleton
-  ErrorLogService get errorLogService => ErrorLogService.instance..initialise(shouldLog: EnvironmentConfig.isProd);
+  ErrorLogService get errorLogService =>
+      ErrorLogService.instance..initialise(shouldLog: EnvironmentConfig.isProd);
 
   @lazySingleton
   MessageDisplayHandler get messageDisplayHandler => ToastErrorHandler();
@@ -47,6 +47,9 @@ abstract class ServiceModule {
     isProd: EnvironmentConfig.isProd,
     sendTimeout: Constants.networkTimeoutDuration,
   );
+
+  @lazySingleton
+  AppLifecycleService get appLifecycleService => AppLifecycleService.instance;
 
   @lazySingleton
   AnalyticsService get analytics => AnalyticsCombinatorService([

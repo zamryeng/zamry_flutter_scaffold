@@ -2,6 +2,8 @@
 export '../../l10n/generated/app_translations.dart';
 // Presentation
 export '../../utilities/extensions/context_extension.dart';
+export '../../utilities/extensions/textstyle_extension.dart';
+export 'package:injectable/injectable.dart';
 // Domain
 export '../domain/app_view_model.dart';
 export '../domain/paginated_data_view_model.dart';
