@@ -26,12 +26,17 @@ class DeviceInfoModel {
   /// Examples: "iPhone 14 Pro", "SM-G991B", "Pixel 6", etc.
   /// The format may vary between platforms and manufacturers.
   final String deviceModel;
+  final String deviceOsVersion;
 
   /// Creates a new [DeviceInfoModel] with the specified device information.
   ///
   /// [deviceBrand] The brand or manufacturer of the device.
   /// [deviceModel] The model identifier of the device.
-  DeviceInfoModel({required this.deviceBrand, required this.deviceModel});
+  DeviceInfoModel({
+    required this.deviceBrand,
+    required this.deviceModel,
+    required this.deviceOsVersion,
+  });
 }
 
 /// Model class for application information.

@@ -158,7 +158,8 @@ class BuildInfoServiceImpl implements BuildInfoService {
       } else {
         deviceInfo = DeviceInfoModel(
           deviceBrand: Platform.operatingSystem,
-          deviceModel: Platform.operatingSystemVersion,
+          deviceModel: Platform.localHostname,
+          deviceOsVersion: Platform.operatingSystemVersion,
         );
       }
       return deviceInfo;
@@ -173,10 +174,12 @@ class BuildInfoServiceImpl implements BuildInfoService {
 
     final deviceBrand = iosInfo.name;
     final deviceModel = '${iosInfo.model}/${iosInfo.utsname.machine}';
+    final deviceOsVersion = iosInfo.systemVersion;
 
     return DeviceInfoModel(
       deviceBrand: _limitToMaxLength(deviceBrand),
       deviceModel: _limitToMaxLength(deviceModel),
+      deviceOsVersion: _limitToMaxLength(deviceOsVersion),
     );
   }
 
@@ -184,10 +187,12 @@ class BuildInfoServiceImpl implements BuildInfoService {
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
     final deviceBrand = androidInfo.brand;
     final deviceModel = androidInfo.model;
+    final deviceOsVersion = androidInfo.version.release;
 
     return DeviceInfoModel(
       deviceBrand: _limitToMaxLength(deviceBrand),
       deviceModel: _limitToMaxLength(deviceModel),
+      deviceOsVersion: _limitToMaxLength(deviceOsVersion),
     );
   }
 
